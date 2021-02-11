@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  #player {
+    display: none;
+  }
+</style>
+<body>
+  <h1>Audio Recorder 2</h1>
+  <button id="record">Record</button>
+  <button id="stop">Stop</button> 
+  <br>
+  <audio id="player" controls></audio>
+
+  <script>
+    const record = document.getElementById('record');
+    const stop = document.getElementById('stop');
+    const player = document.getElementById('player');
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      console.log('getUserMedia supported.');
+      navigator.mediaDevices.getUserMedia ({ audio: true })
+
+          // Success callback
+          .then(function(stream) {
+            console.log(stream)
+            const mediaRecorder = new MediaRecorder(stream)
+
+            record.onclick = () => {
+              mediaRecorder.start();
+              console.log('record start')
+              console.log(mediaRecorder.state);
+              record.style.background = "red";
+              record.style.color = "black";
+            }
+            
+            stop.onclick = () => {
+              mediaRecorder.stop();
+              console.log("recorder stopped");
+              console.log(mediaRecorder.state);
+              record.style.background = "";
+              record.style.color = "";
+            }
+            
+            mediaRecorder.ondataavailable = function(e) {
+              console.log(e.data)
+              const audioUrl = URL.createObjectURL(e.data);
+              player.src = audioUrl;
+              player.style.display = 'block';
+            }
+
+          })
+
+
+          // Error callback
+          .catch(function(err) {
+            console.log('The following getUserMedia error occurred: ' + err);
+          }
+      );
+    } else {
+      console.log('getUserMedia not supported on your browser!');
+    }
+  </script>
+</body>
+</html>
