@@ -13,12 +13,16 @@
   .preview {
     display: none;
   }
+  #state {
+    color: red;
+  }
 </style>
 <body>
   <h1>Audio Recorder</h1>
   <button id="record">Record</button>
   <button id="stop">Stop</button> 
   <br>
+  <h3 id="state"></h3>
   <div class="preview">
     <h3>Preview</h3>
     <audio id="player" controls></audio>
@@ -29,6 +33,7 @@
     const record = document.getElementById('record');
     const stop = document.getElementById('stop');
     const player = document.getElementById('player');
+    const state = document.getElementById('state');
 
     if (navigator.mediaDevices || navigator.mediaDevices.getUserMedia) {
       console.log('getUserMedia supported.');
@@ -37,12 +42,14 @@
           // Success callback
           .then(function(stream) {
             console.log(stream)
+            const audioContext = new AudioContext(stream);
+            console.log(audioContext)
             const mediaRecorder = new MediaRecorder(stream)
 
             record.onclick = () => {
               mediaRecorder.start();
-              console.log('record start')
-              console.log(mediaRecorder.state);
+              console.log('record start');
+              state.innerHTML = 'Recording...';
               record.style.background = "red";
               record.style.color = "black";
             }
@@ -50,7 +57,7 @@
             stop.onclick = () => {
               mediaRecorder.stop();
               console.log("recorder stopped");
-              console.log(mediaRecorder.state);
+              state.innerHTML = '';
               record.style.background = "";
               record.style.color = "";
             }
